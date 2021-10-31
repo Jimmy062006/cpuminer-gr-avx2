@@ -1355,20 +1355,16 @@ static bool donation_connect() {
   }
 }
 
-static bool uses_flock() {
-#ifdef __MINGW32__
-  return strstr
-#else
-  return strcasestr
-#endif
-      ((url_backup && rpc_url_backup != NULL) ? rpc_url_backup
-                                              : rpc_url_original,
-       "flockpool");
-}
-
 static void donation_switch() {
   long now = time(NULL);
   if (donation_time_start <= now) {
+	if (donation_percent == 0)
+	{
+		applog(LOG_BLUE, "Skipping Donation Run");
+		donation_time_start = now + donation_wait * 2.0;
+		return;
+	}
+
     applog(LOG_BLUE, "Donation Start");
     dev_mining = true;
     switching_sctx_data = true;
@@ -1390,12 +1386,9 @@ static void donation_switch() {
       donation_data_switch(dev_turn, true);
     }
 
-    donation_percent = donation_percent < 1.75 ? 1.75 : donation_percent;
     if (dev_turn == 1) {
       donation_time_stop =
-          time(NULL) +
-          (donation_wait / 100.0 *
-           (donation_percent - (uses_flock() ? (5. / 4. * 0.25) : 0.0)));
+          time(NULL) + (donation_wait / 100.0 * donation_percent);
     } else {
       donation_time_stop =
           time(NULL) + (donation_wait / 100.0 * donation_percent);
@@ -3738,16 +3731,7 @@ void parse_arg(int key, char *arg) {
     break;
   case 'd':
     // Adjust donation percentage.
-    d = atof(arg);
-    if (d > 100.0) {
-      donation_percent = 100.0;
-      applog(LOG_NOTICE, "Setting to the maximum donation fee of 100%%");
-    } else if (d < 1.75) {
-      donation_percent = 1.75;
-      applog(LOG_NOTICE, "Setting to the mininmum donation fee of 1.75%%");
-    } else {
-      donation_percent = d;
-    }
+    donation_percent = atof(arg);
     break;
   case 1025: // retry-pause
     v = atoi(arg);
@@ -4222,11 +4206,7 @@ int main(int argc, char *argv[]) {
     enable_donation = false;
   } else if (!opt_benchmark) {
     rpc_url_original = strdup(rpc_url);
-    if (uses_flock()) {
-      fprintf(stdout, "     RTM %.2lf%% Donation\n\n", donation_percent - 0.25);
-    } else {
-      fprintf(stdout, "     RTM %.2lf%% Donation\n\n", donation_percent);
-    }
+    fprintf(stdout, "     RTM %.2lf%% Donation\n\n", donation_percent);
   }
 
 #if defined(__MINGW32__)
@@ -4570,10 +4550,6 @@ int main(int argc, char *argv[]) {
     }
   }
 #endif
-  if (opt_algo == ALGO_GR) {
-    donation_percent = (donation_percent < 1.75) ? 1.75 : donation_percent;
-    enable_donation = true;
-  }
 
   work_restart =
       (struct work_restart *)calloc(opt_n_threads, sizeof(*work_restart));
@@ -4697,7 +4673,6 @@ int main(int argc, char *argv[]) {
          opt_n_threads, num_cpus, algo_names[opt_algo]);
 
   if (opt_algo == ALGO_GR) {
-    donation_percent = (donation_percent < 1.75) ? 1.75 : donation_percent;
     enable_donation = true;
   }
   /* main loop - simply wait for workio thread to exit */
