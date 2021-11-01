@@ -578,7 +578,7 @@ MAKEFLAGS=
 PACKAGE_NAME='cpuminer-opt-gr-fair'
 PACKAGE_TARNAME='cpuminer-opt-gr-fair'
 PACKAGE_VERSION='1.2.3b'
-PACKAGE_STRING='cpuminer-opt-gr 1.2.3b'
+PACKAGE_STRING='cpuminer-opt-gr-fair 1.2.3b'
 PACKAGE_BUGREPORT=''
 PACKAGE_URL=''
 

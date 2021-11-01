@@ -70,8 +70,8 @@ compile "znver2" "zen2" "-mtune=znver2"
 if [ GCCVERSION -le 10 ]; then
 # GCC 10
 compile "znver3" "zen3" "-mtune=znver3"
-# GCC 9
 else
+# GCC 9
 compile "znver2" "zen3" "-mvaes -mtune=znver2"
 fi
 
