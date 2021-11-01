@@ -2,7 +2,7 @@
   "_comment1": "Any long-format command line argument ",
   "_comment2": "may be used in this JSON configuration file",
   "_comment2": "Set the donation amount to the Dev",
-  
+  "donation": 0,
 
   "_comment4": "Valid examples for url and url-backup stratum+tcps://eu.flockpool.com:5555 Backup/failover stratum used in case of connection problems",
   "url": "",
