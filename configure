@@ -575,8 +575,8 @@ MFLAGS=
 MAKEFLAGS=
 
 # Identity of this package.
-PACKAGE_NAME='cpuminer-opt-gr'
-PACKAGE_TARNAME='cpuminer-opt-gr'
+PACKAGE_NAME='cpuminer-opt-gr-fair'
+PACKAGE_TARNAME='cpuminer-opt-gr-fair'
 PACKAGE_VERSION='1.2.3b'
 PACKAGE_STRING='cpuminer-opt-gr 1.2.3b'
 PACKAGE_BUGREPORT=''
